@@ -1,0 +1,21 @@
+## 备注：测试gateway的手动路由功能，不暴露服务名称
+server:
+  port: 9999
+
+spring:
+  application:
+    name: cloud-gateway-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+    gateway:
+      discovery:
+        locator:
+          enabled: false #  #开启自动路由功能(此时可以关闭)
+      routes: # 路由
+        - id: nacos-provider #路由ID，没有固定要求，但是要保证唯一，建议配合服务名
+          # 仅配置服务名就好，无需配置具体ip和端口
+          uri: lb://nacos-provider # http://localhost:9001/nacos-provider  # 匹配提供服务的路由地址
+          predicates:
+            - Path=/msb/** # 断言，路径相匹配进行路由

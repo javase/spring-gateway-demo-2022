@@ -1,4 +1,5 @@
 ## 备注：测试gateway的自动路由功能，无需配置 spring.cloud.gateway.routes
+# 访问时需要带上服务名称，会对外暴露服务名称 例如：http://localhost:9999/nacos-provider/msb/get
 server:
   port: 9999
 
