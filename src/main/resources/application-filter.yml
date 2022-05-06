@@ -1,0 +1,25 @@
+## 备注：演示GateWay Filter的用法
+server:
+  port: 9999
+
+spring:
+  application:
+    name: cloud-gateway-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+    gateway:
+      discovery:
+        locator:
+          enabled: false #  #开启自动路由功能(此时可以关闭)
+      routes: # 路由
+        - id: nacos-provider #路由ID，没有固定要求，但是要保证唯一，建议配合服务名
+          # 仅配置服务名就好，无需配置具体ip和端口
+          uri: lb://nacos-provider # http://localhost:9001/nacos-provider  # 匹配提供服务的路由地址
+          predicates:
+            - Path=/msb/** # 断言，路径相匹配进行路由
+          filters:
+            - StripPrefix=1 # 去掉地址中的第一部分  端口号后面的第一个部分
+            # http://localhost:9999/msb/nacos-provider/msb/get 过滤后： 会去掉9999后面的/msb
+            # http://localhost:9999/nacos-provider/msb/get
