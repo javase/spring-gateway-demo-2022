@@ -1,0 +1,34 @@
+## 备注：演示GateWay断言的用法
+server:
+  port: 9999
+
+spring:
+  application:
+    name: cloud-gateway-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+    gateway:
+      discovery:
+        locator:
+          enabled: false #  #开启自动路由功能(此时可以关闭)
+      routes: # 路由
+        - id: nacos-provider #路由ID，没有固定要求，但是要保证唯一，建议配合服务名
+          # 仅配置服务名就好，无需配置具体ip和端口
+          uri: lb://nacos-provider # http://localhost:9001/nacos-provider  # 匹配提供服务的路由地址
+          predicates:
+            - Path=/msb/** # 断言，路径相匹配进行路由
+            #- After=2022-05-05T12:03:54.057+08:00[Asia/Shanghai] # 在这个时间之后的请求都能通过，当前没有为题以后，故意改为1个小时以后  时间格式可参照：ZonedDateTime
+            # - Cookie=username,[a-z]+ # 匹配Cookie的key和value（正则表达式）
+            # - Host=**.mashibing.com #匹配当前的主机地址发出的请求
+            # - Method=GET,POST
+            - Query=id,.+  # 匹配请求参数，这里如果需要匹配多个参数，可以写多个Query
+        - id: weight_high
+          uri: https://weighthigh.org
+          predicates:
+            - Weight=group1,8
+        - id: weight_low
+          uri: https://weightlow.org
+          predicates:
+            - Weight=group2,2
